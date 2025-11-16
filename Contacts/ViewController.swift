@@ -26,18 +26,15 @@ extension ViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //        производим попытку загрузки переиспользуемой ячейки
-        guard var cell = tableView.dequeueReusableCell(withIdentifier: "MyCell") else {
+        var cell: UITableViewCell
+        if let reuseCell = tableView.dequeueReusableCell(withIdentifier: "MyCell") {
+            print("Use old cell for row with index \(indexPath.row)")
+            cell = reuseCell
+        } else {
             print("Create new cell for row with index \(indexPath.row)")
-            var newCell = UITableViewCell(style: .default, reuseIdentifier: "MyCell")
-            //        конфигурируем ячейку
-            configure(cell: &newCell, for: indexPath)
-            //        возвращаем сконфигурированный экземпляр ячейки
-            return newCell
+            cell = UITableViewCell(style: .default, reuseIdentifier: "MyCell")
         }
-        print("Use old cell for row with index \(indexPath.row)")
         configure(cell: &cell, for: indexPath)
-        //        возвращаем сконфигурированный экземпляр ячейки
         return cell
         
     }
