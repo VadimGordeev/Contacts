@@ -8,14 +8,19 @@
 import UIKit
 
 class ViewController: UIViewController {
-    private var contacts = [ContactProtocol]()
+    @IBOutlet var tableView: UITableView!
+    
+    private var contacts: [ContactProtocol] = [] {
+        didSet {
+            contacts.sort { $0.title < $1.title }
+        }
+    }
 
     private func loadContacts() {
         contacts.append(Contact(title: "Vadim", phone: "+480501234567"))
         contacts.append(Contact(title: "John", phone: "+480501234567"))
         contacts.append(Contact(title: "Jane", phone: "+480501234567"))
         contacts.append(Contact(title: "Alex", phone: "+480501234567"))
-        contacts.sort { $0.title < $1.title }
     }
     
     override func viewDidLoad() {
@@ -23,6 +28,28 @@ class ViewController: UIViewController {
         loadContacts()
     }
 
+    @IBAction func showNewContactAlert() {
+        let alertController = UIAlertController(title: "New contact", message: "Enter contact name and phone number", preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "Name"
+        }
+        alertController.addTextField { textField in
+            textField.placeholder = "Phone number"
+        }
+        
+        let createButton = UIAlertAction(title: "Create", style: .default) { _ in
+            guard let contactName = alertController.textFields?[0].text,
+                  let contactPhone = alertController.textFields?[1].text else { return }
+            let contact = Contact(title: contactName, phone: contactPhone)
+            self.contacts.append(contact)
+            self.tableView.reloadData()
+        }
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel)
+        alertController.addAction(createButton)
+        alertController.addAction(cancelButton)
+        present(alertController, animated: true)
+    }
 }
 
 extension ViewController: UITableViewDataSource {
